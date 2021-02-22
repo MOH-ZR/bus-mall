@@ -10,9 +10,13 @@ let labelElement = document.getElementById('lbl');
 
 // Store the maximum number of selections allowed
 const MaxSelections = 25;
-
 //Store the currently selections made by the user
-let selectionCounter = 0;
+let selectionCounter = 1;
+// Store the products' names
+let names = [];
+// Store the votes 
+let productsVotes = [];
+let productsShown = [];
 
 // construct a product image object 
 function ProductImg(name, imgPath) {
@@ -21,6 +25,7 @@ function ProductImg(name, imgPath) {
     this.votes = 0;
     this.appearedTimes = 0;
     ProductImg.allImgs.push(this);
+    names.push(name)
 }
 
 // store all product images objects
@@ -58,15 +63,27 @@ let leftImgIndex;
 let middleImgIndex;
 let rightImgIndex;
 
+let shownImgs = [20, 20, 20];
 // render three product images
 function renderThreeImgs() {
-    leftImgIndex = getRandomIndex();
-
     // check if the generated images are same
     do {
+        leftImgIndex = getRandomIndex();
         middleImgIndex = getRandomIndex();
         rightImgIndex = getRandomIndex();
+
+        while (isShownLastly(leftImgIndex, middleImgIndex, rightImgIndex)) {
+            leftImgIndex = getRandomIndex();
+            middleImgIndex = getRandomIndex();
+            rightImgIndex = getRandomIndex();
+        }
     } while (leftImgIndex === middleImgIndex || leftImgIndex === rightImgIndex || middleImgIndex === rightImgIndex);
+
+    shownImgs = [];
+
+    shownImgs.push(leftImgIndex);
+    shownImgs.push(middleImgIndex);
+    shownImgs.push(rightImgIndex);
 
     // show the images 
     leftImgElement.src = ProductImg.allImgs[leftImgIndex].imgPath;
@@ -77,6 +94,17 @@ function renderThreeImgs() {
     ProductImg.allImgs[leftImgIndex].appearedTimes += 1;
     ProductImg.allImgs[middleImgIndex].appearedTimes += 1;
     ProductImg.allImgs[rightImgIndex].appearedTimes += 1;
+}
+
+// check if one of the generated images is shown on the previous iteration
+function isShownLastly(left, mid, right) {
+    let shown = false;
+    for (let i = 0; i < shownImgs.length; i++) {
+        if (shownImgs[i] == left || shownImgs[i] == mid || shownImgs[i] == right) {
+            shown = true
+        }
+    }
+    return shown;
 }
 
 // call renderThreeImgs
@@ -91,7 +119,7 @@ rightImgElement.addEventListener('click', handleClick);
 function handleClick(event) {
 
     // check in selection does not exceed the max number allowed
-    if (selectionCounter < MaxSelections) {
+    if (selectionCounter <= MaxSelections) {
         // increase the votes for the selected image
         if (event.target.id == 'left-img') {
             ProductImg.allImgs[leftImgIndex].votes++;
@@ -101,13 +129,24 @@ function handleClick(event) {
             ProductImg.allImgs[rightImgIndex].votes++;
         }
 
+        // update the number shown in the label element
+        labelElement.textContent = selectionCounter;
         // increase the number of selections by one
         selectionCounter++;
 
-        // update the number shown in the label element
-        labelElement.textContent = selectionCounter;
+        if (selectionCounter == 26) {
+            //get an array for votes for products
+            for (let i = 0; i < ProductImg.allImgs.length; i++) {
+                productsVotes.push(ProductImg.allImgs[i].votes);
+                productsShown.push(ProductImg.allImgs[i].appearedTimes)
+            }
+            let canvasElement = document.getElementById('voting-chart');
+            canvasElement.hidden = false;
+            showChart();
+        } else {
+            renderThreeImgs();
+        }
 
-        renderThreeImgs();
     } else {
         leftImgElement.removeEventListener('click', handleClick);
         middleImgElement.removeEventListener('click', handleClick);
@@ -122,7 +161,6 @@ showBtn.addEventListener('click', showResults);
 
 function showResults() {
     if (selectionCounter < MaxSelections) {
-
     } else {
         let resultsList = document.getElementById('selec-results');
         let resultItem;
@@ -133,7 +171,49 @@ function showResults() {
                 + ProductImg.allImgs[i].votes + ' votes, and was seen '
                 + ProductImg.allImgs[i].appearedTimes + ' times';
         }
+
         showBtn.removeEventListener('click', showResults)
     }
 }
+
+// show chart
+function showChart() {
+    // Chart.js code to render  a chart
+    var ctx = document.getElementById('voting-chart').getContext('2d');
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'bar',
+
+        // The data for our dataset
+        data: {
+            labels: names,
+            datasets: [
+                {
+                    label: 'Times shown',
+                    backgroundColor: 'rgb(71, 67, 61);',
+                    borderColor: 'darkorange',
+                    data: productsShown,
+                }, {
+                    label: 'Votes',
+                    backgroundColor: 'darkorange',
+                    borderColor: 'rgb(111, 112, 111)',
+                    data: productsVotes,
+                }
+
+            ]
+        },
+
+        // Configuration options go here
+        options: {
+            layout: {
+                padding: {
+                    left: 5,
+                    right: 5,
+                }
+            }
+        }
+    });
+}
+
+
 

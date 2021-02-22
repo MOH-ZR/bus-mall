@@ -27,8 +27,8 @@ main aside {
     float: left;
     width: 30%;
     margin-top: 50px;
-    height: 450px;
-    border: 1px solid rgb(111, 112, 111);
+    height: 465px;
+    border: 2px solid rgb(111, 112, 111);
     margin-right: 15px;
 }
 main aside h3 {
@@ -60,6 +60,8 @@ body main section:first-child {
     padding-top: 50px;        
 }
 footer p{
+    padding-top: 10px;
+    padding-bottom: 10px;
     width: 350px;
     padding-left:10px;
     font-size: 20px;
@@ -69,7 +71,7 @@ main section:last-child img {
     width: 200px;
     height: 150px;
     margin-left: 80px;
-    border: 1px solid rgb(111, 112, 111);
+    border: 2px solid rgb(111, 112, 111);
     border-radius: 5px;
 }
 
@@ -77,13 +79,13 @@ header label {
     font-size: 35px;
     font-weight: bold;
     position: absolute;
-    right: 60px;
+    right: 30px;
     width: 50px;
     line-height: 50px;
     text-align:center;
-    border: 1px solid rgb(39, 38, 38);
+    border: 2px solid rgb(111, 112, 111);
     border-radius: 50%;
-    color: green;
+    color: darkorange;
 }
 main aside p {
     padding: 5px;
@@ -107,10 +109,11 @@ button {
 main aside ul {
     padding-left: 15px;
     padding-top: 10px;
-    color: rgb(109, 70, 22);
+    color: rgb(218, 123, 8);
     font-size: 16px;
     line-height: 18px;
     font-family: cursive;
     list-style: disc;
     list-style-position:inside;
 }
+
