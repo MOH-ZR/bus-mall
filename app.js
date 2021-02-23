@@ -25,7 +25,7 @@ function ProductImg(name, imgPath) {
     this.votes = 0;
     this.appearedTimes = 0;
     ProductImg.allImgs.push(this);
-    names.push(name)
+    names.push(name);
 }
 
 // store all product images objects
@@ -115,6 +115,30 @@ leftImgElement.addEventListener('click', handleClick);
 middleImgElement.addEventListener('click', handleClick);
 rightImgElement.addEventListener('click', handleClick);
 
+
+// store products in the local storage
+function settingItems() {
+    let data = JSON.stringify(ProductImg.allImgs);
+    localStorage.setItem('product', data);
+}
+
+// getting products from the local storage
+function gettingItems() {
+
+    let stringObject = localStorage.getItem('product');
+    let normalObject = JSON.parse(stringObject);
+
+    if (normalObject !== null) {
+        ProductImg.allImgs = normalObject;
+
+        for (let i = 0; i < ProductImg.allImgs.length; i++) {
+            productsVotes.push(ProductImg.allImgs[i].votes);
+            productsShown.push(ProductImg.allImgs[i].appearedTimes)
+        }
+        showChart();
+    }
+}
+
 // handle clicking event on the images
 function handleClick(event) {
 
@@ -129,6 +153,7 @@ function handleClick(event) {
             ProductImg.allImgs[rightImgIndex].votes++;
         }
 
+
         // update the number shown in the label element
         labelElement.textContent = selectionCounter;
         // increase the number of selections by one
@@ -142,7 +167,9 @@ function handleClick(event) {
             }
             let canvasElement = document.getElementById('voting-chart');
             canvasElement.hidden = false;
+
             showChart();
+            settingItems();
         } else {
             renderThreeImgs();
         }
@@ -192,12 +219,12 @@ function showChart() {
                     label: 'Times shown',
                     backgroundColor: 'rgb(71, 67, 61);',
                     borderColor: 'darkorange',
-                    data: productsShown,
+                    data: productsShown
                 }, {
                     label: 'Votes',
                     backgroundColor: 'darkorange',
                     borderColor: 'rgb(111, 112, 111)',
-                    data: productsVotes,
+                    data: productsVotes
                 }
 
             ]
@@ -215,5 +242,4 @@ function showChart() {
     });
 }
 
-
-
+gettingItems();
